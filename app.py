@@ -8,7 +8,7 @@ import bluetooth._bluetooth as bluez
 from time import sleep
 from utils.bluetooth_utils import toggle_device, start_le_advertising, stop_le_advertising
 
-SLEEP_TIME = 4
+SLEEP_TIME = 2
 
 # Add a docstring to describe the purpose of the script
 help_desc = '''
@@ -66,6 +66,7 @@ bt_data_options = {
     8: "PowerBeats Pro",
     10: "Beats Studio Buds",
     16: "Beats Fit Pro",
+
     19: "AppleTV Pair",
     20: "AppleTV New User",
     21: "AppleTV AppleID Setup",
